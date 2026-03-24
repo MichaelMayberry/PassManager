@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.passmanager.ModelController"
+            style="-fx-background-color: #0f172a;">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20"
+              style="-fx-padding: 20; -fx-background-color: #020617;">
+
+            <Label text="PassManager Dashboard"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+    <center>
+        <GridPane hgap="20" vgap="20"
+                  style="-fx-padding: 20;">
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
+                  spacing="10"
+                  prefWidth="300" prefHeight="200"
+                  style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
+
+                <Label text="Alerts"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
+
+                <ListView fx:id="alertsList"
+                          prefHeight="150" />
+            </VBox>
+
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1"
+                  spacing="10"
+                  prefWidth="300" prefHeight="200"
+                  style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
+
+                <Label text="Accounts"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
+
+                <ListView fx:id="accountsList"
+                          prefHeight="150" />
+
+                <Button text="+ Add Account"
+                        onAction="#onAddAccountClick"
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8;" />
+            </VBox>
+
+        </GridPane>
+    </center>
+
+</BorderPane>

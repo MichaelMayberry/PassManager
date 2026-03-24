@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.passmanager.ModelController"
+           style="-fx-background-color: #0f172a;">
+
+    <VBox alignment="CENTER" spacing="15.0" maxWidth="400"
+          style="-fx-background-radius: 20; -fx-padding: 40;">
+        <Label text="Create Account"
+               style="-fx-font-size: 26px; -fx-text-fill: white; -fx-font-weight: bold;" />
+        <TextField fx:id="firstNameField"
+                   promptText="First Name"
+                   prefWidth="250" prefHeight="40"
+                   style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <TextField fx:id="lastNameField"
+                   promptText="Last Name"
+                   prefWidth="250" prefHeight="40"
+                   style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <DatePicker fx:id="dobPicker"
+                    promptText="Date of Birth"
+                    prefWidth="250" prefHeight="40"
+                    style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <TextField fx:id="newUsernameField"
+                   promptText="Username or Email"
+                   prefWidth="250" prefHeight="40"
+                   style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <PasswordField fx:id="newPasswordField"
+                       promptText="Password"
+                       prefWidth="250" prefHeight="40"
+                       style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <PasswordField fx:id="confirmPasswordField"
+                       promptText="Confirm Password"
+                       prefWidth="250" prefHeight="40"
+                       style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+        <Button text="Create Account"
+                onAction="#onCreateAccountSubmit"
+                prefWidth="250" prefHeight="45"
+                style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10;" />
+        <Button text="⬅ Back to Login"
+                onAction="#onBackClick"
+                prefWidth="250" prefHeight="40"
+                style="-fx-background-color: transparent; -fx-text-fill: #9ca3af; -fx-font-size: 14px;" />
+        <Label fx:id="createStatusLabel"
+               textFill="#f87171"
+               style="-fx-font-size: 13px;" />
+    </VBox>
+</StackPane>
