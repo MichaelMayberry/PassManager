@@ -7,13 +7,15 @@ public class SignUp extends AccountInstance {
     private String fname;
     private String lname;
     private LocalDate dateOfBirth;
+    private String salt;
 
-    public SignUp(String password, String platform, String username, String fname, String lname, LocalDate dateOfBirth)
+    public SignUp(String password, String platform, String username, String fname, String lname, LocalDate dateOfBirth, String salt)
     {
         super(password, platform, username);
         this.fname = fname;
         this.lname = lname;
         this.dateOfBirth = dateOfBirth;
+        this.salt = salt;
     }
 
     public String getFname()

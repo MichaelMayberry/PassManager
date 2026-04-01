@@ -7,7 +7,9 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.h2.bnf.context.DbColumn;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -16,6 +18,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.Base64;
 
 // model
 public class ModelController
@@ -75,6 +79,8 @@ public class ModelController
         String username = newUsernameField.getText();
         String password = newPasswordField.getText();
         String confirm = confirmPasswordField.getText();
+        byte[] salt = AES.generateSalt();
+
 
         if (!password.equals(confirm))
         {
@@ -87,20 +93,21 @@ public class ModelController
             createStatusLabel.setText("Fill in all fields");
             return;
         }
-
-        signUp = new SignUp(password, "MM PassManager", username, firstName, lastName, dob);
+        SecretKey key = AES.deriveKey(password, salt);
+        String ePassword = AES.encrypt(password, key);
 
         //DB Query Code
         Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
         Statement stmt = conn.createStatement();
 
-        if(!query.resultSetToString(stmt.executeQuery(query.checkForAccount(signUp.getUsername(), signUp.getPassword(), "MM PassManager"))).isEmpty())
+        if(!query.resultSetToString(stmt.executeQuery(query.checkForAccount(username, "MM PassManager"))).isEmpty())
         {
             createStatusLabel.setText("Account Already Exists");
             return;
         }
-
-        stmt.execute(query.addAccount(signUp.getPlatform(), signUp.getUsername(), signUp.getPassword()));
+        String eSalt = Base64.getEncoder().encodeToString(salt);
+        signUp = new SignUp(ePassword, "MM PassManager", username, firstName, lastName, dob, eSalt);
+        stmt.execute(query.addAccount(signUp.getPlatform(), signUp.getUsername(), signUp.getPassword(), eSalt));
 
         //New Scene loading code
         FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml"));
@@ -110,29 +117,41 @@ public class ModelController
         conn.close();
     }
     @FXML
-    protected void onLoginSubmit(ActionEvent event) throws Exception
-    /*
-        This is where:
-        * We query DB to see if login credentials exist
-        * Enter Main-screen
-        */
-    {
+    protected void onLoginSubmit(ActionEvent event) throws Exception {
         String username = usernameField.getText();
         String password = passwordField.getText();
+
         Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
         Statement stmt = conn.createStatement();
 
-        if (query.resultSetToString(stmt.executeQuery(query.checkForAccount(username, password, "MM PassManager"))).isEmpty())
+        ResultSet rs = stmt.executeQuery(query.getAccountByUsername(username, "MM PassManager"));
+
+        if (!rs.next())
         {
             statusLabel.setText("Invalid Login Credentials");
             return;
         }
 
 
+        String storedEncryptedPassword = rs.getString("PASSWORD");
+        String saltStr = rs.getString("RANDOM_SALT");
+        byte[] salt = Base64.getDecoder().decode(saltStr);
+
+        SecretKey key = AES.deriveKey(password, salt);
+
+        String decryptedPassword = AES.decrypt(storedEncryptedPassword, key);
+
+        if (!decryptedPassword.equals(password))
+        {
+            statusLabel.setText("Invalid Login Credentials");
+            return;
+        }
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main-screen.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
         stage.setScene(scene);
+
         conn.close();
     }
     @FXML
