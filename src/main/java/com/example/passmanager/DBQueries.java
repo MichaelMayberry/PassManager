@@ -37,6 +37,10 @@ public class DBQueries
 
             return "SELECT PASSWORD, RANDOM_SALT FROM ACCOUNTS WHERE Username = '" + username + "' AND Platform = '" + platform + "'";
         }
+        public String getUsernameByID(int ID) throws Exception
+        {
+            return "SELECT USERNAME FROM ACCOUNTS WHERE ID = '" + ID + "'";
+        }
 
         public String returnSalt(ResultSet rs)
         {

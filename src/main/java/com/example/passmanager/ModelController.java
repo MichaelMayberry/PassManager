@@ -22,29 +22,40 @@ import java.util.Arrays;
 import java.util.Base64;
 
 // model
-public class ModelController
-{
+public class ModelController {
     AccountInstance currentAccount;
     SignUp signUp;
     DBQueries query = new DBQueries();
 
-    @FXML private TextField firstNameField;
-    @FXML private TextField lastNameField;
-    @FXML private TextField newUsernameField;
+    @FXML
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
+    @FXML
+    private TextField newUsernameField;
 
-    @FXML private PasswordField newPasswordField;
-    @FXML private PasswordField confirmPasswordField;
+    @FXML
+    private PasswordField newPasswordField;
+    @FXML
+    private PasswordField confirmPasswordField;
 
-    @FXML private DatePicker dobPicker;
+    @FXML
+    private DatePicker dobPicker;
 
-    @FXML private Label createStatusLabel;
+    @FXML
+    private Label createStatusLabel;
 
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private Label statusLabel;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Label statusLabel;
 
-    @FXML private ListView<String> alertsList;
-    @FXML private ListView<String> accountsList;
+    @FXML
+    private ListView<String> alertsList;
+    @FXML
+    private ListView<String> accountsList;
 
 
     @FXML
@@ -54,14 +65,15 @@ public class ModelController
         Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
         stage.setScene(scene);
     }
+
     @FXML
-    public void onCreateAccountClick(ActionEvent event) throws IOException
-    {
+    public void onCreateAccountClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("create-account.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
         stage.setScene(scene);
     }
+
     @FXML
     public void onCreateAccountSubmit(ActionEvent event) throws Exception
     /*
@@ -71,8 +83,7 @@ public class ModelController
     * Make sure all fields are correct for making an account
     * Load into login view when account is created
     * Make sure that only 1 account can use it so check database if empty
-    */
-    {
+    */ {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         LocalDate dob = dobPicker.getValue();
@@ -82,14 +93,12 @@ public class ModelController
         byte[] salt = AES.generateSalt();
 
 
-        if (!password.equals(confirm))
-        {
+        if (!password.equals(confirm)) {
             createStatusLabel.setText("Passwords do not match");
             return;
         }
 
-        if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty())
-        {
+        if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
             createStatusLabel.setText("Fill in all fields");
             return;
         }
@@ -100,8 +109,7 @@ public class ModelController
         Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
         Statement stmt = conn.createStatement();
 
-        if(!query.resultSetToString(stmt.executeQuery(query.checkForAccount(username, "MM PassManager"))).isEmpty())
-        {
+        if (!query.resultSetToString(stmt.executeQuery(query.checkForAccount(username, "MM PassManager"))).isEmpty()) {
             createStatusLabel.setText("Account Already Exists");
             return;
         }
@@ -116,6 +124,7 @@ public class ModelController
         stage.setScene(scene);
         conn.close();
     }
+
     @FXML
     protected void onLoginSubmit(ActionEvent event) throws Exception {
         String username = usernameField.getText();
@@ -126,8 +135,7 @@ public class ModelController
 
         ResultSet rs = stmt.executeQuery(query.getAccountByUsername(username, "MM PassManager"));
 
-        if (!rs.next())
-        {
+        if (!rs.next()) {
             statusLabel.setText("Invalid Login Credentials");
             return;
         }
@@ -141,8 +149,7 @@ public class ModelController
 
         String decryptedPassword = AES.decrypt(storedEncryptedPassword, key);
 
-        if (!decryptedPassword.equals(password))
-        {
+        if (!decryptedPassword.equals(password)) {
             statusLabel.setText("Invalid Login Credentials");
             return;
         }
@@ -154,18 +161,13 @@ public class ModelController
 
         conn.close();
     }
+
     @FXML
-    protected void onBackClick(ActionEvent event) throws IOException
-    {
+    protected void onBackClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("first-scene.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
         stage.setScene(scene);
-    }
-    @FXML
-    public void onAddAccountClick()
-    {
-        System.out.println("Add account clicked");
     }
 }
 

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.passmanager.ModelController"
+            fx:controller="com.example.passmanager.MainScreenController"
             style="-fx-background-color: #0f172a;">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20"
