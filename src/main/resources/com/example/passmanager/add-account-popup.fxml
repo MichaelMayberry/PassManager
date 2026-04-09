@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.passmanager.AddAccountController"
+      spacing="20"
+      prefWidth="500"
+      prefHeight="400"
+      style="-fx-padding: 40; -fx-background-color: #1e293b; -fx-background-radius: 15;">
+
+    <Label text="Add New Account"
+           style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="usernameField" promptText="Username" prefHeight="40" style="-fx-font-size: 14px;" />
+    <PasswordField fx:id="passwordField" promptText="Password" prefHeight="40" style="-fx-font-size: 14px;" />
+    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" prefHeight="40" style="-fx-font-size: 14px;" />
+    <TextField fx:id="platformField" promptText="Platform" prefHeight="40" style="-fx-font-size: 14px;" />
+
+    <Label fx:id="errorLabel" textFill="red" style="-fx-font-size: 13px;" />
+
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#onCancelClick" prefHeight="38" prefWidth="90" style="-fx-font-size: 14px;" />
+        <Button text="Add" onAction="#onAddClick" prefHeight="38" prefWidth="90"
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 14px;" />
+    </HBox>
+</VBox>

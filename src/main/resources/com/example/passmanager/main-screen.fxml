@@ -16,22 +16,16 @@
     </top>
     <center>
         <GridPane hgap="20" vgap="20" style="-fx-padding: 20;">
-
-            <!-- Column sizing -->
             <columnConstraints>
                 <ColumnConstraints percentWidth="40"/> <!-- Accounts (big) -->
                 <ColumnConstraints percentWidth="30"/>
                 <ColumnConstraints percentWidth="30"/>
             </columnConstraints>
-
-            <!-- Row sizing -->
             <rowConstraints>
                 <RowConstraints percentHeight="33"/>
                 <RowConstraints percentHeight="33"/>
                 <RowConstraints percentHeight="34"/>
             </rowConstraints>
-
-            <!-- ACCOUNTS (LEFT SIDE - SPANS ALL ROWS) -->
             <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
                   GridPane.rowSpan="3"
                   spacing="10"
@@ -47,9 +41,6 @@
                         onAction="#onAddAccountClick"
                         style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8;" />
             </VBox>
-
-
-            <!-- Row 0 -->
             <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
                 <Label text="Alerts" style="-fx-text-fill: white;" />
             </VBox>
@@ -58,7 +49,6 @@
                 <Label text="Tab 2" style="-fx-text-fill: white;" />
             </VBox>
 
-            <!-- Row 1 -->
             <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
                 <Label text="Tab 3" style="-fx-text-fill: white;" />
             </VBox>
@@ -67,7 +57,6 @@
                 <Label text="Tab 4" style="-fx-text-fill: white;" />
             </VBox>
 
-            <!-- Row 2 -->
             <VBox GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
                 <Label text="Tab 5" style="-fx-text-fill: white;" />
             </VBox>

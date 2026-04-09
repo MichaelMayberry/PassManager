@@ -21,7 +21,9 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.Base64;
 
-// model
+/**
+ * This controller is used to handle account creation, logging in, and successful login attempts vs unsuccessful
+ */
 public class ModelController {
     AccountInstance currentAccount;
     SignUp signUp;
@@ -58,6 +60,12 @@ public class ModelController {
     private ListView<String> accountsList;
 
 
+    /**
+     * Navigates to the login view.
+     *
+     * @param event the action event from the Login button
+     * @throws IOException if the login-view FXML cannot be loaded
+     */
     @FXML
     public void onLoginClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml"));
@@ -66,6 +74,12 @@ public class ModelController {
         stage.setScene(scene);
     }
 
+    /**
+     * Navigates to the create-account form view.
+     *
+     * @param event the action event from the Create Account button
+     * @throws IOException if the create-account FXML cannot be loaded
+     */
     @FXML
     public void onCreateAccountClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("create-account.fxml"));
@@ -74,6 +88,17 @@ public class ModelController {
         stage.setScene(scene);
     }
 
+    /**
+     * Handles submission of the create-account form.
+     * <p>
+     * Validates that all fields are filled and passwords match, derives an AES key,
+     * encrypts the password, checks for duplicate accounts, persists the new account
+     * to the database, and redirects to the login view on success.
+     * </p>
+     *
+     * @param event the action event from the Submit button
+     * @throws Exception if encryption, key derivation, or database access fails
+     */
     @FXML
     public void onCreateAccountSubmit(ActionEvent event) throws Exception
     /*
@@ -125,6 +150,16 @@ public class ModelController {
         conn.close();
     }
 
+    /**
+     * Handles login form submission. Looks up the stored encrypted password and salt for the username, re-creates
+     * the AES key from the entered password, decrypts the stored password, and
+     * compares it. On success, stores the key in the Session class method setKey and navigates
+     * to the main screen.
+     *
+     *
+     * @param event the action event from the Login button
+     * @throws Exception if decryption, key derivation, or database access fails
+     */
     @FXML
     protected void onLoginSubmit(ActionEvent event) throws Exception {
         String username = usernameField.getText();
@@ -154,6 +189,8 @@ public class ModelController {
             return;
         }
 
+        Session.setKey(key);
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main-screen.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
@@ -162,6 +199,12 @@ public class ModelController {
         conn.close();
     }
 
+    /**
+     * Navigates back to the welcome screen.
+     *
+     * @param event the action event from the Back button
+     * @throws IOException if the first-scene FXML cannot be loaded
+     */
     @FXML
     protected void onBackClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("first-scene.fxml"));
