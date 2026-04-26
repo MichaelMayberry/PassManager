@@ -9,25 +9,25 @@
            style="-fx-background-color: #0f172a;">
 
     <VBox alignment="CENTER" spacing="20.0" maxWidth="400"
-          style="-fx-background-radius: 20; -fx-padding: 40;">
+          style="-fx-padding: 40;">
 
         <Label text="Login"
-               style="-fx-font-size: 26px; -fx-text-fill: white; -fx-font-weight: bold;" />
+               style="-fx-font-size: 26px; -fx-text-fill: white;" />
 
         <TextField fx:id="usernameField"
                    promptText="Username"
                    prefWidth="250" prefHeight="40"
-                   style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+                   style="-fx-font-size: 14px;" />
 
         <PasswordField fx:id="passwordField"
                        promptText="Password"
                        prefWidth="250" prefHeight="40"
-                       style="-fx-background-radius: 10; -fx-font-size: 14px;" />
+                       style="-fx-font-size: 14px;" />
 
         <Button text="Login"
                 onAction="#onLoginSubmit"
                 prefWidth="250" prefHeight="45"
-                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10;" />
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 16px;" />
 
         <Button text="⬅ Back"
                 onAction="#onBackClick"

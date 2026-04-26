@@ -11,7 +11,7 @@
               style="-fx-padding: 20; -fx-background-color: #020617;">
 
             <Label text="PassManager Dashboard"
-                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+                   style="-fx-text-fill: white; -fx-font-size: 20px;" />
         </HBox>
     </top>
     <center>
@@ -29,40 +29,45 @@
             <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
                   GridPane.rowSpan="3"
                   spacing="10"
-                  style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
+                  style="-fx-background-color: #1e293b; -fx-padding: 15;">
 
                 <Label text="Accounts"
-                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
+                       style="-fx-text-fill: white; -fx-font-size: 16px;" />
 
                 <ListView fx:id="accountsList"
                           VBox.vgrow="ALWAYS" />
 
                 <Button text="+ Add Account"
                         onAction="#onAddAccountClick"
-                        style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8;" />
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: white;" />
             </VBox>
-            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Alerts" style="-fx-text-fill: white;" />
-            </VBox>
-
-            <VBox GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Tab 2" style="-fx-text-fill: white;" />
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" spacing="10"
+                  style="-fx-background-color: #1e293b; -fx-padding: 15;">
+                <Label text="Alerts" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                <ListView fx:id="alertsList" VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Tab 3" style="-fx-text-fill: white;" />
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="2" spacing="10"
+                  style="-fx-background-color: #1e293b; -fx-padding: 15;">
+                <Label text="Password Generator"
+                       style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Generate Password"
+                        onAction="#onGeneratePasswordClick"
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: white;" />
+                <TextField fx:id="generatedPasswordField" editable="false" prefHeight="35"
+                           style="-fx-font-size: 13px;" />
+                <Button text="Copy to Clipboard"
+                        onAction="#onCopyPasswordClick"
+                        style="-fx-background-color: #475569; -fx-text-fill: white;" />
             </VBox>
 
-            <VBox GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Tab 4" style="-fx-text-fill: white;" />
-            </VBox>
-
-            <VBox GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Tab 5" style="-fx-text-fill: white;" />
-            </VBox>
-
-            <VBox GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 15;">
-                <Label text="Tab 6" style="-fx-text-fill: white;" />
+            <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="10"
+                  style="-fx-background-color: #1e293b; -fx-padding: 15;">
+                <Label text="Strength Checker"
+                       style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Check Password Strength"
+                        onAction="#onStrengthCheckClick"
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: white;" />
             </VBox>
 
         </GridPane>

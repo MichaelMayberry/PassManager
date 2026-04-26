@@ -6,13 +6,12 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
- * This class is used to have a place where all SQL statements passed to the backend can live, although these are susceptible to SQL injections
- * the next scope will be to change that
+ * This class is used to have a place where all SQL statements passed to the backend can live
  */
 public class DBQueries
 {
-
-        /** Constructs a new DBQueries instance. */
+        /** This allows it so that the app can run in every user's machine off of their home directory. */
+        public static final String URL = "jdbc:h2:" + System.getProperty("user.home") + "/PassManager/data;AUTO_SERVER=TRUE";
         public DBQueries(){};
 
         /**
@@ -52,12 +51,6 @@ public class DBQueries
         {
             return "SELECT * FROM ACCOUNTS WHERE Platform = '" + searchedFor + "' OR " + "Username = '" + searchedFor + "' OR " + "Password = '" + searchedFor + "'";
         }
-        /*public String sortByUsername(){}
-        public String sortByPlatform(){}
-        public String sortByPassword(){}
-        public String sortByDateCreated(){}
-        public String sortByLastUpdated(){}
-         */
         /**
          * Returns a SELECT statement to check whether an account already exists
          * for the given username and platform.

@@ -25,8 +25,13 @@ import java.util.Base64;
  * This controller is used to handle account creation, logging in, and successful login attempts vs unsuccessful
  */
 public class ModelController {
+    /** The account instance for the currently logged-in user, set after a successful login. */
     AccountInstance currentAccount;
+
+    /** Holds the sign-up data collected from the create-account form before it is persisted. */
     SignUp signUp;
+
+    /** Provides all SQL query strings used by this controller. */
     DBQueries query = new DBQueries();
 
     @FXML
@@ -131,7 +136,7 @@ public class ModelController {
         String ePassword = AES.encrypt(password, key);
 
         //DB Query Code
-        Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
+        Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
         Statement stmt = conn.createStatement();
 
         if (!query.resultSetToString(stmt.executeQuery(query.checkForAccount(username, "MM PassManager"))).isEmpty()) {
@@ -165,7 +170,7 @@ public class ModelController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
+        Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
         Statement stmt = conn.createStatement();
 
         ResultSet rs = stmt.executeQuery(query.getAccountByUsername(username, "MM PassManager"));

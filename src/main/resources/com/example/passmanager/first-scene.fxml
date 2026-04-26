@@ -11,10 +11,10 @@
            style="-fx-background-color: #0f172a">
 
     <VBox alignment="CENTER" spacing="25.0" maxWidth="400"
-          style="-fx-background-radius: 20; -fx-padding: 40;">
+          style="-fx-padding: 40;">
 
         <Label text="MM PassManager"
-               style="-fx-font-size: 28px; -fx-text-fill: white; -fx-font-weight: bold;" />
+               style="-fx-font-size: 28px; -fx-text-fill: white;" />
 
         <Label text="Securing your passwords with encryption"
                style="-fx-font-size: 14px; -fx-text-fill: #9ca3af;" />
@@ -22,12 +22,12 @@
         <Button text="Login"
                 onAction="#onLoginClick"
                 prefWidth="250" prefHeight="45"
-                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10;" />
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 16px;" />
 
         <Button text="Create Account"
                 onAction="#onCreateAccountClick"
                 prefWidth="250" prefHeight="45"
-                style="-fx-background-color: transparent; -fx-border-color: #3b82f6; -fx-text-fill: #3b82f6; -fx-font-size: 16px; -fx-background-radius: 10; -fx-border-radius: 10;" />
+                style="-fx-background-color: transparent; -fx-border-color: #3b82f6; -fx-text-fill: #3b82f6; -fx-font-size: 16px; -fx-border-radius: 10;" />
 
     </VBox>
 

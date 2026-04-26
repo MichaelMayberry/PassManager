@@ -18,10 +18,22 @@ public class Launcher {
      */
     public static void main(String[] args) throws SQLException
     {
-        Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
-        org.h2.tools.Server.createWebServer().start();
-        //System.out.println(query.resultSetToString(stmt.executeQuery(query.viewAccountInfo("GitHub"))));
+        Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
+        Statement stmt = conn.createStatement();
+        stmt.execute(
+            "CREATE TABLE IF NOT EXISTS Accounts (" +
+            "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+            "Platform VARCHAR(255), " +
+            "Username VARCHAR(255), " +
+            "Password VARCHAR(512), " +
+            "RANDOM_SALT VARCHAR(255))"
+        );
+        conn.close();
         Application.launch(HelloApplication.class, args);
     }
 }
 // http://localhost:8082
+//DELETE FROM Accounts;
+//ALTER TABLE Accounts ALTER COLUMN id RESTART WITH 1
+//To update any code make sure we have nothing in our database, and we want to
+// be in the directory /Users/schmay/IdeaProjects/PassManager and do ./build.sh

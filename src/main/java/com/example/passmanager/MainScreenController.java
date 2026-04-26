@@ -12,25 +12,34 @@ import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 /**
- * This is used as the controller for the main screen of the application. Used for navigation and interacting with the observable list
- *
+ * Controller for the main dashboard screen of the application.
+ * This is where we manage alerts, generated passwords, password strength tester, and encryption of passwords
  */
 public class MainScreenController
 {
     @FXML
     private ListView<AccountInstance> accountsList;
 
+    @FXML
+    private ListView<String> alertsList;
+
+    @FXML
+    private javafx.scene.control.TextField generatedPasswordField;
+
     private ObservableList<AccountInstance> accounts = FXCollections.observableArrayList();
+    private ObservableList<String> alerts = FXCollections.observableArrayList();
 
     /**/
     /**
      * Called automatically by JavaFX after the FXML scene is loaded.
-     * We create a list view here that we can interact with which is what initialize is important.
-     * We basically are saying hey lets get the accounts from the database, create a list of them and then display them
-     * ina list view while we create a click listener that displays a pop-up for that specific account if it is clicked by
-     * calling showAccountPopup.
+     * This is what is used to call all the methods we need when the main screen is loaded.
+     * Also sets the color red for alerts.
      */
     @FXML
     public void initialize()
@@ -38,7 +47,26 @@ public class MainScreenController
     // but gets called by Javafx
     {
         accountsList.setItems(accounts);
+        alertsList.setItems(alerts);
+        alertsList.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if (item.startsWith("Duplicate")) {
+                        setStyle("-fx-text-fill: #ef4444;");
+                    } else {
+                        setStyle("-fx-text-fill: white;");
+                    }
+                }
+            }
+        });
         loadAccountsFromDB();
+        refreshAlerts();
 
         // lambda that allows us to have an anonymous function that gets called
         // every single time the user interacts with the list
@@ -55,16 +83,15 @@ public class MainScreenController
         });
     }
     /**
-     * This queries the database to get all the accounts available and when the H2 database returns the result set we
-     * format into account objects that we add to an observable list until the result set has no more returns. We then
-     * set the observable list into accountsList that then creates cells for each AccountInstance and highlights the
-     * account where the primary key ID is 1
+     * We call a query from H2 database to populate the Accounts list view
+     * We apply a gold highlight to the master password  while putting all the following passwords into
+     * account objects  to which we then add to the listview
      */
     private void loadAccountsFromDB()
     {
         // loads accounts and puts all inside a list
         try {
-            Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
+            Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT ID, Platform, Username, Password FROM Accounts");
 
@@ -108,7 +135,7 @@ public class MainScreenController
                         else {
                             setText(item.getPlatform() + " — " + item.getUsername());
                             if (item.getId() == 1) {
-                                setStyle("-fx-background-color: #ffe680; -fx-font-weight: bold;");
+                                setStyle("-fx-background-color: #ffe680;");
                             } else {
                                 setStyle("");
                             }
@@ -122,10 +149,122 @@ public class MainScreenController
             e.printStackTrace();
         }
     }
+
     /**
-     * This creates the pop-up window for when an account is selected in the list view. You have to actions to close the window or
-     * delete the account. Session creates a static instance of the password so all controllers can access the main password. We then check if the
-     * account is the logged in account and if it is we do not display a delete button. We then wait for user interaction and if the click delete account the account is deleted
+     * Clears the alerts list, runs all alert checks, and shows No alerts if not conditions are met/
+     * All callers use this instead of calling individual checks directly.
+     */
+    private void refreshAlerts() {
+        alerts.clear();
+        refreshAlerts();
+        checkForReusedUsernames();
+        checkForDuplicatePasswords();
+        if (alerts.isEmpty()) {
+            alerts.add("No alerts.");
+        }
+    }
+
+    /**
+     * Decrypts every password in the database and scans for duplicates.
+     * We use an embedded for loop and 2 array lists to go through each password in the database.
+     * We also have another array list that is keeping track of which account we are actively looking at.
+     * If any 2 passwords are the same we create an alert stating both platforms and usernames where the passwords match
+     */
+    private void checkForDuplicatePasswords() {
+        try {
+            Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT Platform, Username, Password FROM Accounts");
+
+            ArrayList<String> decryptedPasswords = new ArrayList<>();
+            ArrayList<String> accountLabels = new ArrayList<>();
+
+            while (rs.next()) {
+                String platform = rs.getString("Platform");
+                String username = rs.getString("Username");
+                String encryptedPassword = rs.getString("Password");
+                try {
+                    decryptedPasswords.add(AES.decrypt(encryptedPassword, Session.getKey()));
+                    accountLabels.add(platform + " (" + username + ")");
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+            conn.close();
+
+            boolean[] reported = new boolean[decryptedPasswords.size()];
+
+            for (int i = 0; i < decryptedPasswords.size(); i++)
+            {
+                if (reported[i]) continue;
+                ArrayList<String> group = new ArrayList<>();
+                group.add(accountLabels.get(i));
+                for (int j = i + 1; j < decryptedPasswords.size(); j++)
+                {
+                    if (decryptedPasswords.get(i).equals(decryptedPasswords.get(j)))
+                    {
+                        group.add(accountLabels.get(j));
+                        reported[j] = true;
+                    }
+                }
+                if (group.size() > 1) {
+                    alerts.add("Duplicate password: " + String.join(", ", group));
+                    reported[i] = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Similar to the checkForReusedPasswords we have an embedded for loops with 2 separate arraylists
+     * keeping track of where we are in checking.
+     *
+     */
+    private void checkForReusedUsernames() {
+        try {
+            Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT Platform, Username FROM Accounts");
+
+            ArrayList<String> usernames = new ArrayList<>();
+            ArrayList<String> platforms = new ArrayList<>();
+
+            while (rs.next()) {
+                usernames.add(rs.getString("Username"));
+                platforms.add(rs.getString("Platform"));
+            }
+            conn.close();
+
+            boolean[] reported = new boolean[usernames.size()];
+
+            for (int i = 0; i < usernames.size(); i++) {
+                if (reported[i]) continue;
+                ArrayList<String> group = new ArrayList<>();
+                group.add(platforms.get(i));
+                for (int j = i + 1; j < usernames.size(); j++) {
+                    if (usernames.get(i).equals(usernames.get(j))) {
+                        group.add(platforms.get(j));
+                        reported[j] = true;
+                    }
+                }
+                if (group.size() > 1) {
+                    alerts.add("Reused username: " + String.join(", ", group) + " (" + usernames.get(i) + ")");
+                    reported[i] = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This calls a popup when the accounts listview is clicked on and decrypts the password from the database
+     *
+     * @param account the {@link AccountInstance} whose details should be displayed
      */
 
     private void showAccountPopup(AccountInstance account) {
@@ -157,19 +296,21 @@ public class MainScreenController
         });
     }
     /**
-     * This calls a query from DBQueries to get the account associated with the username and platform given and removes it from the database
+     * This calls a query from DBQueries to get the account associated with the account Instance
+     *
+     *
+     * @param account the account Instance to delete
      */
     private void deleteAccount(AccountInstance account) {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
+            Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
             DBQueries query = new DBQueries();
-            PreparedStatement stmt = conn.prepareStatement(query.removeAccount(account.getPlatform(), account.getUsername()));
-            stmt.setString(1, account.getPlatform());
-            stmt.setString(2, account.getUsername());
-            stmt.executeUpdate();
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(query.removeAccount(account.getPlatform(), account.getUsername()));
             conn.close();
 
             accounts.remove(account);
+            refreshAlerts();
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -177,9 +318,9 @@ public class MainScreenController
 
     }
     /**
-     * When the Add Account button is clicked we create a pop-up asking for the necessary information, as long as the information
-     * passes the validation format from AddAccountController the account gets created and the listview is updated by calling all the accounts from
-     * the database again.
+     * When the Add Account button is clicked we create a pop-up asking for the necessary information, as long as the
+     * information passes the validation format from AddAccountController the account gets created and the listview is updated by calling all
+     * the accounts from the database again.
      */
     @FXML
     private void onAddAccountClick() {
@@ -191,17 +332,96 @@ public class MainScreenController
             popupStage.setScene(new Scene(loader.load()));
             popupStage.showAndWait();
 
-            // Refresh list after adding
+            // Refresh list and alerts after adding
             accounts.clear();
             loadAccountsFromDB();
+            refreshAlerts();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * We frist create a string that goes 3 uppercase letters, 5 lowercase letters, 3 digits then 3 symbols.
+     * Then in the while loop since that is only 14 characters we add 6 more characters from all. We then use a
+     * Shuffler to shuffle the characters and a string builder to append all the chars in the array list.
+     */
+    @FXML
+    private void onGeneratePasswordClick() {
+        String upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower   = "abcdefghijklmnopqrstuvwxyz";
+        String digits  = "0123456789";
+        String symbols = "!@#$%^&*";
+        String all     = upper + lower + digits + symbols;
+
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        ArrayList<Character> chars = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            chars.add(upper.charAt(random.nextInt(upper.length())));
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            chars.add(lower.charAt(random.nextInt(lower.length())));
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            chars.add(digits.charAt(random.nextInt(digits.length())));
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            chars.add(symbols.charAt(random.nextInt(symbols.length())));
+        }
+
+        while (chars.size() < 20)
+        {
+            chars.add(all.charAt(random.nextInt(all.length())));
+        }
+
+        Collections.shuffle(chars, random);
+
+        StringBuilder sb = new StringBuilder();
+        for (char c : chars)
+        {
+            sb.append(c);
+        }
+        generatedPasswordField.setText(sb.toString());
+    }
+
+    /**
+     * Copies the generated password to the clipboard
+     */
+    @FXML
+    private void onCopyPasswordClick()
+    {
+        String password = generatedPasswordField.getText();
+        if (!password.isEmpty())
+        {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(password);
+            clipboard.setContent(content);
+        }
+    }
+
+    /**
+     * Opens the password-strength-popup.fxml
+     */
+    @FXML
+    private void onStrengthCheckClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/passmanager/password-strength-popup.fxml"));
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setTitle("Password Strength Checker");
+            popupStage.setScene(new Scene(loader.load()));
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
-// how does the listview update when i add a new entry during the app
-
-
 

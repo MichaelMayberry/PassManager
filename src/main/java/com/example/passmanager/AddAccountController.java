@@ -41,8 +41,8 @@ public class AddAccountController
      * @return a String
      */
     private String validatePassword(String password) {
-        if (password.length() < 16)
-            return "Password must be at least 16 characters.";
+        if (password.length() < 10)
+            return "Password must be at least 10 characters.";
 
         int upper = 0;
         int digits = 0;
@@ -107,7 +107,7 @@ public class AddAccountController
             return;
         }
 
-        Connection conn = DriverManager.getConnection("jdbc:h2:/Users/schmay/test;AUTO_SERVER=TRUE", "sa", "");
+        Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
         Statement stmt = conn.createStatement();
 
         ResultSet ex = stmt.executeQuery(query.getUsernameByID(1)); // both of these
