@@ -54,13 +54,15 @@ public class MainScreenController
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
-                    setStyle("");
+                    setStyle("-fx-background-color: #1e293b;");
                 } else {
                     setText(item);
                     if (item.startsWith("Duplicate")) {
-                        setStyle("-fx-text-fill: #ef4444;");
+                        setStyle("-fx-text-fill: #ef4444; -fx-background-color: #1e293b;");
+                    } else if (item.startsWith("Reused")) {
+                        setStyle("-fx-text-fill: #f97316; -fx-background-color: #1e293b;");
                     } else {
-                        setStyle("-fx-text-fill: white;");
+                        setStyle("-fx-text-fill: #9ca3af; -fx-background-color: #1e293b;");
                     }
                 }
             }
@@ -156,7 +158,6 @@ public class MainScreenController
      */
     private void refreshAlerts() {
         alerts.clear();
-        refreshAlerts();
         checkForReusedUsernames();
         checkForDuplicatePasswords();
         if (alerts.isEmpty()) {

@@ -24,10 +24,14 @@
                 prefWidth="250" prefHeight="45"
                 style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-size: 16px;" />
 
-        <Button text="Create Account"
+        <Button fx:id="createAccountButton"
+                text="Create Account"
                 onAction="#onCreateAccountClick"
                 prefWidth="250" prefHeight="45"
                 style="-fx-background-color: transparent; -fx-border-color: #3b82f6; -fx-text-fill: #3b82f6; -fx-font-size: 16px; -fx-border-radius: 10;" />
+
+        <Label fx:id="firstSceneStatusLabel"
+               style="-fx-font-size: 13px; -fx-text-fill: #9ca3af;" />
 
     </VBox>
 

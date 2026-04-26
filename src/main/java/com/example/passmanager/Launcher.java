@@ -1,6 +1,7 @@
 package com.example.passmanager;
 
 import javafx.application.Application;
+import org.h2.tools.Server;
 
 import java.sql.*;
 
@@ -18,6 +19,8 @@ public class Launcher {
      */
     public static void main(String[] args) throws SQLException
     {
+        Server.createWebServer("-web", "-webPort", "8082").start();
+
         Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
         Statement stmt = conn.createStatement();
         stmt.execute(
@@ -33,6 +36,7 @@ public class Launcher {
     }
 }
 // http://localhost:8082
+// jdbc:h2:~/PassManager/data
 //DELETE FROM Accounts;
 //ALTER TABLE Accounts ALTER COLUMN id RESTART WITH 1
 //To update any code make sure we have nothing in our database, and we want to

@@ -40,7 +40,7 @@ public class AddAccountController
      * @param password the plaintext password to derive a key from
      * @return a String
      */
-    private String validatePassword(String password) {
+    public static String validatePassword(String password) {
         if (password.length() < 10)
             return "Password must be at least 10 characters.";
 

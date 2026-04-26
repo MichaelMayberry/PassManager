@@ -63,7 +63,29 @@ public class ModelController {
     private ListView<String> alertsList;
     @FXML
     private ListView<String> accountsList;
+    @FXML
+    private Button createAccountButton;
+    @FXML
+    private Label firstSceneStatusLabel;
 
+
+    @FXML
+    public void initialize() {
+        if (createAccountButton == null) return;
+        try {
+            Connection conn = DriverManager.getConnection(DBQueries.URL, "sa", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT ID FROM ACCOUNTS WHERE ID = 1");
+            if (rs.next()) {
+                createAccountButton.setVisible(false);
+                createAccountButton.setManaged(false);
+                firstSceneStatusLabel.setText("An account has already been created.");
+            }
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Navigates to the login view.
@@ -123,13 +145,19 @@ public class ModelController {
         byte[] salt = AES.generateSalt();
 
 
+        if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
+            createStatusLabel.setText("Fill in all fields");
+            return;
+        }
+
         if (!password.equals(confirm)) {
             createStatusLabel.setText("Passwords do not match");
             return;
         }
 
-        if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
-            createStatusLabel.setText("Fill in all fields");
+        String passwordError = AddAccountController.validatePassword(password);
+        if (passwordError != null) {
+            createStatusLabel.setText(passwordError);
             return;
         }
         SecretKey key = AES.deriveKey(password, salt);
